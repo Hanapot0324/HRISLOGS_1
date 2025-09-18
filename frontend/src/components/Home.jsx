@@ -74,7 +74,7 @@ useEffect(() => {
   if (!employeeNumber) return;
   const fetchAttendance = async () => {
     try {
-      const res = await axios.get(`${API_BASE}/attendance/${employeeNumber}`);
+      const res = await axios.get(`${API_BASE_URL}/attendance/${employeeNumber}`);
       // assuming your backend returns an object like { TimeIn, BreakIn, BreakOut, TimeOut }
       if (res.data) {
         setAttendance({
@@ -125,7 +125,7 @@ useEffect(() => {
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
-        const res = await axios.get(`${API_BASE}/api/announcements`);
+        const res = await axios.get(`${API_BASE_URL}/api/announcements`);
         setAnnouncements(Array.isArray(res.data) ? res.data : []);
       } catch (err) {
         console.error('Error fetching announcements:', err);
@@ -178,7 +178,7 @@ useEffect(() => {
   useEffect(() => {
     const fetchProfilePicture = async () => {
       try {
-        const res = await axios.get(`${API_BASE}/personalinfo/person_table`);
+        const res = await axios.get(`${API_BASE_URL}/personalinfo/person_table`);
         const list = Array.isArray(res.data) ? res.data : [];
         const match = list.find((p) => String(p.agencyEmployeeNum) === String(employeeNumber));
         if (match && match.profile_picture) setProfilePicture(match.profile_picture);
@@ -196,7 +196,7 @@ useEffect(() => {
       if (!employeeNumber) return;
       try {
         setLoading(true);
-        const res = await axios.get(`${API_BASE}/api/finalized-payroll`);
+        const res = await axios.get(`${API_BASE_URL}/api/finalized-payroll`);
         const list = Array.isArray(res.data) ? res.data : [];
         const userPayroll = list.find((p) =>
           String(p.employeeNumber) === String(employeeNumber) ||
@@ -1045,7 +1045,7 @@ useEffect(() => {
             <>
               <Typography variant="h5" component="h2" gutterBottom>{selectedAnnouncement.title}</Typography>
               {selectedAnnouncement.image && (
-                <Box component="img" src={`${API_BASE}${selectedAnnouncement.image}`} alt={selectedAnnouncement.title}
+                <Box component="img" src={`${API_BASE_URL}${selectedAnnouncement.image}`} alt={selectedAnnouncement.title}
                   sx={{ width: '100%', height: 'auto', maxHeight: 300, objectFit: 'cover', borderRadius: 1, mb: 2 }} />
               )}
               <Typography variant="body1" paragraph>{selectedAnnouncement.about || selectedAnnouncement.description}</Typography>
