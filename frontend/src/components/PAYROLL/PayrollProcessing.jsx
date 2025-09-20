@@ -179,7 +179,8 @@ const PayrollProcess = () => {
     const fetchDepartments = async () => {
       try {
         const response = await axios.get(
-          `${API_BASE_URL}/api/department-table`
+          `${API_BASE_URL}/api/department-table`,
+          getAuthHeaders()
         );
         setDepartments(response.data);
       } catch (err) {

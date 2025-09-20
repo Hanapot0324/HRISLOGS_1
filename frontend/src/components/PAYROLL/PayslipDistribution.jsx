@@ -31,10 +31,8 @@ import hrisLogo from '../../assets/hrisLogo.png';
 import LoadingOverlay from '../LoadingOverlay';
 import SuccessfulOverlay from '../SuccessfulOverlay';
 
-
 const PayslipDistribution = forwardRef(({ employee }, ref) => {
   const payslipRef = ref || useRef();
-
 
   const [allPayroll, setAllPayroll] = useState([]);
   const [displayEmployee, setDisplayEmployee] = useState(employee || null);
@@ -70,14 +68,12 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
     };
   };
 
-
   // Search & Filters
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMonth, setSelectedMonth] = useState('');
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [filteredPayroll, setFilteredPayroll] = useState([]);
   const [selectedEmployees, setSelectedEmployees] = useState([]);
-
 
   const months = [
     'Jan',
@@ -94,11 +90,9 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
     'Dec',
   ];
 
-
   // Generate year options (current year ± 5 years)
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 6 }, (_, i) => currentYear - i);
-
 
   // Fetch payroll
   useEffect(() => {
@@ -107,7 +101,7 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
         try {
           setLoading(true);
           const res = await axios.get(
-            `${API_BASE_URL}/api/finalized-payroll`,
+            `${API_BASE_URL}/PayrollRoute/finalized-payroll`,
             getAuthHeaders()
           );
           setAllPayroll(res.data);
@@ -122,11 +116,9 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
     }
   }, [employee]);
 
-
   // Filter payroll by Year, Month, and Search
   useEffect(() => {
     let result = [...allPayroll];
-
 
     if (selectedMonth) {
       const monthIndex = months.indexOf(selectedMonth);
@@ -139,7 +131,6 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
       });
     }
 
-
     if (searchQuery.trim() !== '') {
       const q = searchQuery.toLowerCase();
       result = result.filter(
@@ -149,18 +140,15 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
       );
     }
 
-
     setFilteredPayroll(result);
     setSelectedEmployees([]); // reset selection when filters change
   }, [selectedMonth, selectedYear, searchQuery, allPayroll]);
-
 
   // Month select
   const handleMonthSelect = (month) => {
     setSelectedMonth(month);
     setDisplayEmployee(null);
   };
-
 
   // Checkbox logic
   const allSelected =
@@ -170,7 +158,6 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
     selectedEmployees.length > 0 &&
     selectedEmployees.length < filteredPayroll.length;
 
-
   const handleSelectAll = (event) => {
     if (event.target.checked) {
       setSelectedEmployees(filteredPayroll.map((emp) => emp.employeeNumber));
@@ -178,7 +165,6 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
       setSelectedEmployees([]);
     }
   };
-
 
   const handleSelectOne = (id) => {
     if (selectedEmployees.includes(id)) {
@@ -188,14 +174,12 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
     }
   };
 
-
   // Helper function to generate 3-month PDF for an employee
   const generate3MonthPDF = async (employee) => {
     // 1. Identify current month/year from employee
     const currentStart = new Date(employee.startDate);
     const currentMonth = currentStart.getMonth(); // 0-11
     const currentYear = currentStart.getFullYear();
-
 
     // 2. Collect last 3 months (current, prev, prev-1)
     const monthsToGet = [0, 1, 2].map((i) => {
@@ -206,7 +190,6 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
         label: d.toLocaleString('en-US', { month: 'long', year: 'numeric' }),
       };
     });
-
 
     // 3. Find payroll records (or null if missing)
     const records = monthsToGet.map(({ month, year, label }) => {
@@ -219,19 +202,16 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
       return { payroll, label };
     });
 
-
     // 4. PDF setup - landscape orientation for 3 payslips
     const pdf = new jsPDF('l', 'in', 'a4');
     const contentWidth = 3.5;
     const contentHeight = 7.1;
     const gap = 0.2;
 
-
     const totalWidth = contentWidth * 3 + gap * 2;
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
     const yOffset = (pageHeight - contentHeight) / 2;
-
 
     const positions = [
       (pageWidth - totalWidth) / 2,
@@ -239,18 +219,15 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
       (pageWidth - totalWidth) / 2 + (contentWidth + gap) * 2,
     ];
 
-
     // 5. Render each of the 3 slots
     for (let i = 0; i < records.length; i++) {
       const { payroll, label } = records[i];
       let imgData;
 
-
       if (payroll) {
         // Normal payslip
         setDisplayEmployee(payroll);
         await new Promise((resolve) => setTimeout(resolve, 500)); // wait DOM update
-
 
         const input = payslipRef.current;
         const canvas = await html2canvas(input, { scale: 2, useCORS: true });
@@ -262,10 +239,8 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
         placeholderCanvas.height = 1200;
         const ctx = placeholderCanvas.getContext('2d');
 
-
         ctx.fillStyle = '#fff';
         ctx.fillRect(0, 0, placeholderCanvas.width, placeholderCanvas.height);
-
 
         ctx.fillStyle = '#6D2323';
         ctx.font = 'bold 28px Arial';
@@ -274,10 +249,8 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
         ctx.font = '20px Arial';
         ctx.fillText(`for ${label}`, placeholderCanvas.width / 2, 550);
 
-
         imgData = placeholderCanvas.toDataURL('image/png');
       }
-
 
       // Add to PDF
       pdf.addImage(
@@ -290,30 +263,24 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
       );
     }
 
-
     return pdf.output('blob');
   };
-
 
   // Bulk send selected payslips with 3-month layout
   const sendSelectedPayslips = async () => {
     if (selectedEmployees.length === 0) return;
 
-
     setSending(true);
     setLoadingMessage('Generating payslips and sending via Gmail...');
-
 
     try {
       const formData = new FormData();
       let payslipMeta = [];
 
-
       // Update loading message for processing
       setLoadingMessage(
         `Processing ${selectedEmployees.length} employee payslips...`
       );
-
 
       for (const emp of filteredPayroll.filter((e) =>
         selectedEmployees.includes(e.employeeNumber)
@@ -321,11 +288,9 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
         // Update loading message for current employee
         setLoadingMessage(`Generating payslip for ${emp.name}...`);
 
-
         // Generate 3-month PDF for this employee
         const pdfBlob = await generate3MonthPDF(emp);
         formData.append('pdfs', pdfBlob, `${emp.name}_3month_payslip.pdf`);
-
 
         payslipMeta.push({
           name: emp.name,
@@ -333,20 +298,18 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
         });
       }
 
-
       // Update loading message for sending
       setLoadingMessage('Sending payslips via Gmail...');
 
-
       formData.append('payslips', JSON.stringify(payslipMeta));
 
-
-      await axios.post(
-        `${API_BASE_URL}/SendPayslipRoute/send-bulk`,
-        formData,
-        { headers: { 'Content-Type': 'multipart/form-data' } }
-      );
-
+      await axios.post(`${API_BASE_URL}/SendPayslipRoute/send-bulk`, formData, {
+        ...getAuthHeaders(),
+        headers: {
+          ...getAuthHeaders().headers,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
 
       // Show success overlay
       setSending(false);
@@ -364,7 +327,6 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
       });
     }
   };
-
 
   return (
     <Container maxWidth="lg">
@@ -393,7 +355,6 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
         </Box>
       </Paper>
 
-
       {/* Filters: Search + Year + Month */}
       <Box
         mb={2}
@@ -421,7 +382,6 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
             sx={{ maxWidth: 400 }}
           />
 
-
           {/* Year Dropdown (Far Right) */}
           <Select
             value={selectedYear}
@@ -435,7 +395,6 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
             ))}
           </Select>
         </Box>
-
 
         {/* Month Buttons below */}
         <Box display="flex" flexWrap="wrap" gap={1}>
@@ -459,7 +418,6 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
           ))}
         </Box>
       </Box>
-
 
       {/* Employee Table */}
       {selectedMonth && (
@@ -525,7 +483,6 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
         </Paper>
       )}
 
-
       {/* Bulk Send Button */}
       {/* Bulk Send Button */}
       {selectedMonth && filteredPayroll.length > 0 && (
@@ -547,7 +504,6 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
         </Box>
       )}
 
-
       {sending && (
         <LoadingOverlay
           open={sending}
@@ -561,7 +517,6 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
           onClose={() => setSuccessOverlay({ open: false, action: '' })}
         />
       )}
-
 
       {/* Hidden Payslip Renderer - Updated with new layout */}
       {displayEmployee && (
@@ -598,7 +553,6 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
             }}
           />
 
-
           {/* Header - Updated with gradient background and dual logos */}
           <Box
             display="flex"
@@ -620,7 +574,6 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
               />
             </Box>
 
-
             {/* Center Text */}
             <Box textAlign="center" flex={1} sx={{ color: 'white' }}>
               <Typography variant="subtitle2" sx={{ fontStyle: 'italic' }}>
@@ -636,13 +589,11 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
               <Typography variant="body2">Nagtahan, Sampaloc Manila</Typography>
             </Box>
 
-
             {/* Right Logo */}
             <Box>
               <img src={hrisLogo} alt="HRIS Logo" style={{ width: '80px' }} />
             </Box>
           </Box>
-
 
           {/* Rows */}
           <Box sx={{ border: '2px solid black', borderBottom: '0px' }}>
@@ -873,7 +824,6 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
                   <Typography fontWeight="bold">{row.label}</Typography>
                 </Box>
 
-
                 {/* Right column (value with left border) */}
                 <Box
                   sx={{
@@ -888,7 +838,6 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
             ))}
           </Box>
 
-
           {/* Footer */}
           <Box
             display="flex"
@@ -900,7 +849,6 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
             <Typography>Certified Correct:</Typography>
             <Typography>plus PERA — 2,000.00</Typography>
           </Box>
-
 
           <Box
             display="flex"
@@ -916,7 +864,6 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
         </Paper>
       )}
 
-
       {/* Modal */}
       <Dialog
         open={modal.open}
@@ -930,18 +877,15 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
             onClose={() => setModal({ ...modal, open: false })}
           />
 
-
           {/* ❌ Error fallback */}
           {modal.type === 'error' && (
             <div style={{ color: 'red', fontWeight: 'bold' }}>❌ Error</div>
           )}
         </DialogTitle>
 
-
         <DialogContent>
           <Typography>{modal.message}</Typography>
         </DialogContent>
-
 
         <DialogActions>
           <Button onClick={() => setModal({ ...modal, open: false })} autoFocus>
@@ -953,10 +897,4 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
   );
 });
 
-
 export default PayslipDistribution;
-
-
-
-
-

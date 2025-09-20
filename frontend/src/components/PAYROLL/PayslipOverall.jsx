@@ -17,7 +17,6 @@ import {
 } from '@mui/material';
 import Search from '@mui/icons-material/Search';
 
-
 import WorkIcon from '@mui/icons-material/Work';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -26,10 +25,8 @@ import logo from '../../assets/logo.png';
 import hrisLogo from '../../assets/hrisLogo.png';
 import SuccessfulOverlay from '../SuccessfulOverlay';
 
-
 const PayslipOverall = forwardRef(({ employee }, ref) => {
   const payslipRef = ref || useRef();
-
 
   const [allPayroll, setAllPayroll] = useState([]);
   const [displayEmployee, setDisplayEmployee] = useState(employee || null);
@@ -60,7 +57,6 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
     };
   };
 
-
   const [search, setSearch] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState('');
@@ -80,7 +76,6 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
     'Dec',
   ];
 
-
   // Fetch payroll data
   useEffect(() => {
     if (!employee) {
@@ -88,7 +83,7 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
         try {
           setLoading(true);
           const res = await axios.get(
-            `${API_BASE_URL}/api/finalized-payroll`,
+            `${API_BASE_URL}/payrollRoute/finalized-payroll`,
             getAuthHeaders()
           );
           setAllPayroll(res.data);
@@ -103,16 +98,13 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
     }
   }, [employee]);
 
-
   const downloadPDF = async () => {
     if (!displayEmployee) return;
-
 
     // 1. Identify current month/year from displayEmployee
     const currentStart = new Date(displayEmployee.startDate);
     const currentMonth = currentStart.getMonth(); // 0-11
     const currentYear = currentStart.getFullYear();
-
 
     // 2. Collect last 3 months (current, prev, prev-1)
     const monthsToGet = [0, 1, 2].map((i) => {
@@ -123,7 +115,6 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
         label: d.toLocaleString('en-US', { month: 'long', year: 'numeric' }),
       };
     });
-
 
     // 3. Find payroll records (or null if missing)
     const records = monthsToGet.map(({ month, year, label }) => {
@@ -136,19 +127,16 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
       return { payroll, label };
     });
 
-
     // 4. PDF setup
     const pdf = new jsPDF('l', 'in', 'a4');
     const contentWidth = 3.5;
     const contentHeight = 7.1;
     const gap = 0.2;
 
-
     const totalWidth = contentWidth * 3 + gap * 2;
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
     const yOffset = (pageHeight - contentHeight) / 2;
-
 
     const positions = [
       (pageWidth - totalWidth) / 2,
@@ -156,20 +144,16 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
       (pageWidth - totalWidth) / 2 + (contentWidth + gap) * 2,
     ];
 
-
     // 5. Render each of the 3 slots
     for (let i = 0; i < records.length; i++) {
       const { payroll, label } = records[i];
 
-
       let imgData;
-
 
       if (payroll) {
         // ✅ Normal payslip
         setDisplayEmployee(payroll);
         await new Promise((resolve) => setTimeout(resolve, 300)); // wait DOM update
-
 
         const input = payslipRef.current;
         const canvas = await html2canvas(input, { scale: 2, useCORS: true });
@@ -181,10 +165,8 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
         placeholderCanvas.height = 1200;
         const ctx = placeholderCanvas.getContext('2d');
 
-
         ctx.fillStyle = '#fff';
         ctx.fillRect(0, 0, placeholderCanvas.width, placeholderCanvas.height);
-
 
         ctx.fillStyle = '#6D2323';
         ctx.font = 'bold 28px Arial';
@@ -193,10 +175,8 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
         ctx.font = '20px Arial';
         ctx.fillText(`for ${label}`, placeholderCanvas.width / 2, 550);
 
-
         imgData = placeholderCanvas.toDataURL('image/png');
       }
-
 
       // Add to PDF
       pdf.addImage(
@@ -209,10 +189,8 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
       );
     }
 
-
     // 6. Save file
     pdf.save(`${displayEmployee.name || 'EARIST'}-Payslips-3Months.pdf`);
-
 
     setModal({
       open: true,
@@ -220,16 +198,13 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
       action: 'download',
     });
 
-
     // Restore current employee in UI
     setDisplayEmployee(displayEmployee);
   };
 
-
   // Send Payslip via Gmail
   const sendPayslipViaGmail = async () => {
     if (!displayEmployee) return;
-
 
     setSending(true);
     try {
@@ -237,7 +212,6 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
       const currentStart = new Date(displayEmployee.startDate);
       const currentMonth = currentStart.getMonth();
       const currentYear = currentStart.getFullYear();
-
 
       // 2. Collect last 3 months (current + 2 previous)
       const monthsToGet = [0, 1, 2].map((i) => {
@@ -248,7 +222,6 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
           label: d.toLocaleString('en-US', { month: 'long', year: 'numeric' }),
         };
       });
-
 
       // 3. Find records
       const records = monthsToGet.map(({ month, year, label }) => {
@@ -261,19 +234,16 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
         return { payroll, label };
       });
 
-
       // 4. PDF setup
       const pdf = new jsPDF('l', 'in', 'a4');
       const contentWidth = 3.5;
       const contentHeight = 7.1;
       const gap = 0.2;
 
-
       const totalWidth = contentWidth * 3 + gap * 2;
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
       const yOffset = (pageHeight - contentHeight) / 2;
-
 
       const positions = [
         (pageWidth - totalWidth) / 2,
@@ -281,12 +251,10 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
         (pageWidth - totalWidth) / 2 + (contentWidth + gap) * 2,
       ];
 
-
       // 5. Render each slot (same as downloadPDF)
       for (let i = 0; i < records.length; i++) {
         const { payroll, label } = records[i];
         let imgData;
-
 
         if (payroll) {
           setDisplayEmployee(payroll);
@@ -311,7 +279,6 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
           imgData = placeholderCanvas.toDataURL('image/png');
         }
 
-
         pdf.addImage(
           imgData,
           'PNG',
@@ -322,7 +289,6 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
         );
       }
 
-
       // 6. Convert PDF to Blob
       const pdfBlob = pdf.output('blob');
       const formData = new FormData();
@@ -330,14 +296,18 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
       formData.append('name', displayEmployee.name);
       formData.append('employeeNumber', displayEmployee.employeeNumber);
 
-
       // 7. Send to backend
       const res = await axios.post(
         `${API_BASE_URL}/SendPayslipRoute/send-payslip`,
         formData,
-        { headers: { 'Content-Type': 'multipart/form-data' } }
+        {
+          ...getAuthHeaders(),
+          headers: {
+            ...getAuthHeaders().headers,
+            'Content-Type': 'multipart/form-data',
+          },
+        }
       );
-
 
       if (res.data.success) {
         setModal({
@@ -366,18 +336,15 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
     }
   };
 
-
   // For Search
   const handleSearch = () => {
     if (!search.trim()) return;
-
 
     const result = allPayroll.filter(
       (emp) =>
         emp.employeeNumber.toString().includes(search.trim()) ||
         emp.name.toLowerCase().includes(search.trim().toLowerCase())
     );
-
 
     if (result.length > 0) {
       setFilteredPayroll(result);
@@ -392,7 +359,6 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
     }
   };
 
-
   // For Clear / Reset
   const clearSearch = () => {
     setSearch('');
@@ -406,12 +372,10 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
     }
   };
 
-
   // 📅 Month filter
   const handleMonthSelect = (month) => {
     setSelectedMonth(month);
     const monthIndex = months.indexOf(month);
-
 
     const result = filteredPayroll.filter((emp) => {
       if (!emp.startDate) return false;
@@ -419,10 +383,8 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
       return empMonth === monthIndex;
     });
 
-
     setDisplayEmployee(result.length > 0 ? result[0] : null);
   };
-
 
   return (
     <Container maxWidth="10%">
@@ -450,7 +412,6 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
           </Box>
         </Box>
       </Paper>
-
 
       <Box
         mb={2}
@@ -518,7 +479,6 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
           </Box>
         </Box>
 
-
         {/* Month Filter */}
         <Typography
           variant="subtitle2"
@@ -562,7 +522,6 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
           ))}
         </Box>
       </Box>
-
 
       {/* Payslip Content */}
       {loading ? (
@@ -621,7 +580,6 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
               />
             </Box>
 
-
             {/* Center Text */}
             <Box textAlign="center" flex={1} sx={{ color: 'white' }}>
               <Typography variant="subtitle2" sx={{ fontStyle: 'italic' }}>
@@ -637,13 +595,11 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
               <Typography variant="body2">Nagtahan, Sampaloc Manila</Typography>
             </Box>
 
-
             {/* Right Logo */}
             <Box>
               <img src={hrisLogo} alt="HRIS Logo" style={{ width: '80px' }} />
             </Box>
           </Box>
-
 
           {/* Rows */}
           <Box sx={{ border: '2px solid black', borderBottom: '0px' }}>
@@ -733,7 +689,6 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
                     ).toLocaleString()}`
                   : '',
               },
-
 
               {
                 label: 'HOUSING LOAN:',
@@ -876,7 +831,6 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
                   <Typography fontWeight="bold">{row.label}</Typography>
                 </Box>
 
-
                 {/* Right column (value with left border) */}
                 <Box
                   sx={{
@@ -891,7 +845,6 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
             ))}
           </Box>
 
-
           {/* Footer */}
           <Box
             display="flex"
@@ -903,7 +856,6 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
             <Typography>Certified Correct:</Typography>
             <Typography>plus PERA – 2,000.00</Typography>
           </Box>
-
 
           <Box
             display="flex"
@@ -944,7 +896,6 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
         </Alert>
       ) : null}
 
-
       {/* Download Button */}
       {/* Action Buttons */}
       {displayEmployee && (
@@ -962,7 +913,6 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
           >
             Download Payslip | PDF
           </Button>
-
 
           <Button
             variant="contained"
@@ -994,7 +944,6 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
           onClose={() => setModal({ ...modal, open: false })}
         />
 
-
         {modal.type === 'error' && (
           <div style={{ color: 'red', padding: '20px' }}>
             {modal.message || 'An error occurred'}
@@ -1005,8 +954,4 @@ const PayslipOverall = forwardRef(({ employee }, ref) => {
   );
 });
 
-
 export default PayslipOverall;
-
-
-
