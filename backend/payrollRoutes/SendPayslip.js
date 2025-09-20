@@ -3,6 +3,7 @@ const router = express.Router();
 const mysql = require("mysql2");
 const nodemailer = require("nodemailer");
 const multer = require("multer");
+const jwt = require('jsonwebtoken');
 require("dotenv").config();
 
 
@@ -25,6 +26,51 @@ const db = mysql.createPool({
   queueLimit: 0,
 });
 
+// Authentication middleware
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  console.log('Auth header:', authHeader);
+  console.log('Token:', token ? 'Token exists' : 'No token');
+
+  if (!token) return res.status(401).json({ error: 'No token provided' });
+
+  jwt.verify(token, process.env.JWT_SECRET || 'secret', (err, user) => {
+    if (err) {
+      console.log('JWT verification error:', err.message);
+      return res.status(403).json({ error: 'Invalid token' });
+    }
+    console.log('Decoded JWT:', user);
+    req.user = user;
+    next();
+  });
+}
+
+// Audit logging function
+function logAudit(
+  user,
+  action,
+  tableName,
+  recordId,
+  targetEmployeeNumber = null
+) {
+  const auditQuery = `
+    INSERT INTO audit_log (employeeNumber, action, table_name, record_id, targetEmployeeNumber, timestamp)
+    VALUES (?, ?, ?, ?, ?, NOW())
+  `;
+
+  db.query(
+    auditQuery,
+    [user.employeeNumber, action, tableName, recordId, targetEmployeeNumber],
+    (err) => {
+      if (err) {
+        console.error('Error inserting audit log:', err);
+      }
+    }
+  );
+}
+
 
 
 
@@ -33,10 +79,17 @@ const db = mysql.createPool({
 
 
 // ✅ GET all users
-router.get("/users", (req, res) => {
+router.get("/users", authenticateToken, (req, res) => {
   const sql = "SELECT username AS name, email, employeeNumber FROM users";
   db.query(sql, (err, results) => {
     if (err) return res.status(500).json({ error: err });
+    
+    try {
+      logAudit(req.user, 'View', 'users', null, null);
+    } catch (e) {
+      console.error('Audit log error:', e);
+    }
+    
     res.json(results);
   });
 });
@@ -61,7 +114,7 @@ router.get("/test", (req, res) => {
 
 
 // ✅ SEND payslip via Gmail
-router.post("/send-payslip", upload.single("pdf"), async (req, res) => {
+router.post("/send-payslip", authenticateToken, upload.single("pdf"), async (req, res) => {
   try {
     const { name, employeeNumber } = req.body;
     const pdfFile = req.file;
@@ -147,6 +200,13 @@ router.post("/send-payslip", upload.single("pdf"), async (req, res) => {
 
 
                 await transporter.sendMail(mailOptions);
+                
+                try {
+                  logAudit(req.user, 'Send Payslip', 'payslip_email', null, employeeNumber);
+                } catch (e) {
+                  console.error('Audit log error:', e);
+                }
+                
                 res.json({ success: true, message: "Payslip sent successfully" });
                 });
             } catch (err) {

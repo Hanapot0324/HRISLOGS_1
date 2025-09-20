@@ -57,13 +57,31 @@ const EmployeeRemittance = () => {
   const [successOpen, setSuccessOpen] = useState(false);
   const [successAction, setSuccessAction] = useState("");
 
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    console.log(
+      'Token from localStorage:',
+      token ? 'Token exists' : 'No token found'
+    );
+    if (token) {
+      console.log('Token length:', token.length);
+      console.log('Token starts with:', token.substring(0, 20) + '...');
+    }
+    return {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    };
+  };
+
   useEffect(() => {
     fetchRemittances();
   }, []);
 
   const fetchRemittances = async () => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/Remittance/employee-remittance`);
+      const res = await axios.get(`${API_BASE_URL}/Remittance/employee-remittance`, getAuthHeaders());
       setData(res.data);
     } catch (err) {
       console.error('Error fetching data:', err);
@@ -78,7 +96,7 @@ const EmployeeRemittance = () => {
         Object.entries(newRemittance).filter(([_, value]) => value !== '')
       );
       
-      await axios.post(`${API_BASE_URL}/Remittance/employee-remittance`, filteredRemittance);
+      await axios.post(`${API_BASE_URL}/Remittance/employee-remittance`, filteredRemittance, getAuthHeaders());
       setNewRemittance({
         employeeNumber: '',
         name: '',
@@ -114,7 +132,7 @@ const EmployeeRemittance = () => {
 
   const handleUpdate = async () => {
     try {
-      await axios.put(`${API_BASE_URL}/Remittance/employee-remittance/${editRemittance.id}`, editRemittance);
+      await axios.put(`${API_BASE_URL}/Remittance/employee-remittance/${editRemittance.id}`, editRemittance, getAuthHeaders());
       setEditRemittance(null);
       setOriginalRemittance(null);
       setIsEditing(false);
@@ -129,7 +147,7 @@ const EmployeeRemittance = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${API_BASE_URL}/Remittance/employee-remittance/${id}`);
+      await axios.delete(`${API_BASE_URL}/Remittance/employee-remittance/${id}`, getAuthHeaders());
       setEditRemittance(null);
       setOriginalRemittance(null);
       setIsEditing(false);

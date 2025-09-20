@@ -19,15 +19,12 @@ import '@fontsource/poppins';
 import earistLogo from './assets/earistLogo.jpg';
 import hrisLogo from './assets/hrisLogo.png';
 
-
 import Login from './components/Login';
 import Register from './components/Register';
 import Unauthorized from './components/Unauthorized';
 import AllIcons from './components/Page';
 import LoadingOverlay from './components/LoadingOverlay';
 import SuccessfulOverlay from './components/SuccessfulOverlay';
-
-
 
 import Home from './components/Home';
 import Sidebar from './components/Sidebar';
@@ -37,7 +34,6 @@ import AnnouncementForm from './components/Announcement';
 import Profile from './components/DASHBOARD/Profile';
 import BulkRegister from './components/BulkRegister';
 import Registration from './components/Registration';
-
 
 //DASHBOARD
 import PersonalTable from './components/DASHBOARD/PersonTable';
@@ -50,7 +46,6 @@ import LearningAndDevelopment from './components/DASHBOARD/LearningAndDevelopmen
 import VoluntaryWork from './components/DASHBOARD/Voluntary';
 import Eligibility from './components/DASHBOARD/Eligibility';
 import GraduateTable from './components/DASHBOARD/GraduateStudies';
-
 
 //ATTENDANCE RECORDS
 import ViewAttendanceRecord from './components/ATTENDANCE/AttendanceDevice';
@@ -65,7 +60,6 @@ import AttendanceModuleFaculty40 from './components/ATTENDANCE/AttendanceModuleF
 import OverallAttendancePage from './components/ATTENDANCE/AttendanceSummary';
 import OfficialTimeForm from './components/ATTENDANCE/OfficialTimeForm';
 
-
 //PAYROLL
 import PayrollProcess from './components/PAYROLL/PayrollProcessing';
 import Remittances from './components/PAYROLL/Remittances';
@@ -76,8 +70,6 @@ import DepartmentAssignment from './components/PAYROLL/DepartmentAssignment';
 import Holiday from './components/PAYROLL/Holiday';
 import PhilHealthTable from './components/PAYROLL/PhilHealth';
 import PayrollProcessed from './components/PAYROLL/PayrollProcessed';
-
-
 
 //FORMS
 import AssessmentClearance from './components/FORMS/AssessmentClearance';
@@ -98,13 +90,11 @@ import SubjectStillToBeTaken from './components/FORMS/SubjectStillToBeTaken';
 import IndividualFacultyLoading from './components/FORMS/IndividualFacultyLoading';
 import HrmsRequestForms from './components/FORMS/HRMSRequestForms';
 
-
 // PDS
 import PDS1 from './components/PDS/PDS1';
 import PDS2 from './components/PDS/PDS2';
 import PDS3 from './components/PDS/PDS3';
 import PDS4 from './components/PDS/PDS4';
-
 
 //PAYSLIP
 import Payslip from './components/PAYROLL/Payslip';
@@ -118,13 +108,9 @@ import LeaveRequest from './components/LEAVE/LeaveRequest';
 import LeaveDatePickerModal from './components/LEAVE/LeaveDatePicker';
 import LeaveAssignment from './components/LEAVE/LeaveAssignment';
 import LeaveCredits from './components/LEAVE/LeaveCredits';
-
-
+import AuditLogs from './components/AuditLogs';
 
 const drawerWidth = 250;
-
-
-
 
 function App() {
   const [open, setOpen] = useState(false);
@@ -136,46 +122,39 @@ function App() {
   const location = useLocation();
   const [open6, setOpen6] = useState(false);
 
-
-
-
-
   const handleClick = () => setOpen(!open);
   const handleClickAttendance = () => setOpen2(!open2);
   const handleClickPayroll = () => setOpen3(!open3);
   const handleClickForms = () => setOpen4(!open4);
   const handleClickPDSFiles = () => setOpen5(!open5);
 
-
-  const handleItemClick = (item) => {setSelectedItem(item);};
-
-
+  const handleItemClick = (item) => {
+    setSelectedItem(item);
+  };
 
   return (
-      <ThemeProvider
-        theme={createTheme({
-          typography: {
-            fontFamily: 'Poppins, sans-serif',
-            body1: { fontSize: '13px' }, // adjust sidebar fontsize
-          },
-        })}
-      >
- 
+    <ThemeProvider
+      theme={createTheme({
+        typography: {
+          fontFamily: 'Poppins, sans-serif',
+          body1: { fontSize: '13px' }, // adjust sidebar fontsize
+        },
+      })}
+    >
       <Box
         sx={{
           display: 'flex',
           flexDirection: 'column',
           minHeight: '10vh',
           overflow: 'hidden',
-          
         }}
       >
-      {/* Header */}
-       <AppBar
+        {/* Header */}
+        <AppBar
           position="fixed"
-          sx={{ 
-            zIndex: 1201, 
-            bgcolor: '#6d2323', 
+          sx={{
+            zIndex: 1201,
+            bgcolor: '#6d2323',
             height: '62px',
             overflow: 'hidden',
           }}
@@ -186,36 +165,35 @@ function App() {
             src={hrisLogo}
             alt="Watermark"
             sx={{
-              position: 'absolute',    
+              position: 'absolute',
               top: '50%',
               left: '50%',
               transform: 'translate(-50%, -50%)',
-              opacity: 0.05,             
-              width: '100%',             
-              pointerEvents: 'none',     
+              opacity: 0.05,
+              width: '100%',
+              pointerEvents: 'none',
               userSelect: 'none',
             }}
           />
 
           <Toolbar sx={{ display: 'flex', alignItems: 'center' }}>
-      
-              <>
-                {/* EARIST Logo */}
-                <img
-                  src={earistLogo} 
-                  alt="EARIST Logo" 
-                  width="45" 
-                  height="45" 
-                  style={{
-                    marginRight: '10px',
-                    border: '1px solid white',
-                    borderRadius: '50px',
-                    marginLeft: '-15px'
-                  }}
-                />
+            <>
+              {/* EARIST Logo */}
+              <img
+                src={earistLogo}
+                alt="EARIST Logo"
+                width="45"
+                height="45"
+                style={{
+                  marginRight: '10px',
+                  border: '1px solid white',
+                  borderRadius: '50px',
+                  marginLeft: '-15px',
+                }}
+              />
 
-                {/* HRIS Logo */}
-                {/* <img
+              {/* HRIS Logo */}
+              {/* <img
                   src={hrisLogo} 
                   alt="HRIS Logo" 
                   width="45" 
@@ -226,24 +204,30 @@ function App() {
                     borderRadius: '50px',
                   }}
                 /> */}
-              </>
-            
+            </>
+
             <Box>
-              <Typography variant="body2" noWrap sx={{ lineHeight: 1.2, color: 'white', marginTop: '8px' }}>
+              <Typography
+                variant="body2"
+                noWrap
+                sx={{ lineHeight: 1.2, color: 'white', marginTop: '8px' }}
+              >
                 Eulogio "Amang" Rodriguez Institute of Science and Technology
               </Typography>
-              <Typography variant="subtitle1" noWrap sx={{ color: 'white', fontWeight: 'bold', marginTop: '-5px' }}>
+              <Typography
+                variant="subtitle1"
+                noWrap
+                sx={{ color: 'white', fontWeight: 'bold', marginTop: '-5px' }}
+              >
                 Human Resources Information System
               </Typography>
             </Box>
           </Toolbar>
         </AppBar>
 
-
-
-
-
-        {!['/', '/login', '/register', '/forgot-password'].includes(location.pathname) && (
+        {!['/', '/login', '/register', '/forgot-password'].includes(
+          location.pathname
+        ) && (
           <Sidebar
             open={open}
             handleClick={handleClick}
@@ -258,11 +242,8 @@ function App() {
           />
         )}
 
-
-
-
         {/* Main Content */}
-       <Box
+        <Box
           component="main"
           sx={{
             flexGrow: 1,
@@ -278,11 +259,13 @@ function App() {
             <Route path="/bulk-register" element={<BulkRegister />} />
             <Route path="/registration" element={<Registration />} />
             <Route path="/" element={<Login />} />
-            <Route path='/forgot-password' element={<ForgotPassword />}/>
+            <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route
               path="/home"
               element={
-                <ProtectedRoute allowedRoles={['administrator', 'superadmin', 'staff']}>
+                <ProtectedRoute
+                  allowedRoles={['administrator', 'superadmin', 'staff']}
+                >
                   <Home />
                 </ProtectedRoute>
               }
@@ -292,7 +275,7 @@ function App() {
               path="/children"
               element={
                 <ProtectedRoute allowedRoles={['administrator', 'superadmin']}>
-                  <Children/>
+                  <Children />
                 </ProtectedRoute>
               }
             />
@@ -355,7 +338,9 @@ function App() {
             <Route
               path="/personalinfo"
               element={
-                <ProtectedRoute allowedRoles={['staff', 'administrator', 'superadmin']}>
+                <ProtectedRoute
+                  allowedRoles={['staff', 'administrator', 'superadmin']}
+                >
                   <PersonalTable />
                 </ProtectedRoute>
               }
@@ -368,7 +353,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
-           
+
             <Route
               path="/view_attendance"
               element={
@@ -386,15 +371,16 @@ function App() {
               }
             />
 
-             <Route
+            <Route
               path="/attendance-user-state"
               element={
-                <ProtectedRoute allowedRoles={['administrator', 'superadmin', 'staff']}>
+                <ProtectedRoute
+                  allowedRoles={['administrator', 'superadmin', 'staff']}
+                >
                   <AttendanceUserState />
                 </ProtectedRoute>
               }
             />
-
 
             <Route
               path="/daily_time_record"
@@ -441,9 +427,6 @@ function App() {
               }
             />
 
-
-
-
             <Route
               path="/attendance_module_faculty_40hrs" //40hrs
               element={
@@ -452,9 +435,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
-
-
 
             <Route
               path="/attendance_summary"
@@ -472,7 +452,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
 
             <Route
               path="/pds1"
@@ -515,9 +494,6 @@ function App() {
               }
             />
 
-
-
-
             <Route
               path="/payroll-table"
               element={
@@ -527,7 +503,7 @@ function App() {
               }
             />
 
-             <Route
+            <Route
               path="/payroll-processed"
               element={
                 <ProtectedRoute allowedRoles={['administrator', 'superadmin']}>
@@ -535,12 +511,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
-
-
-
-
-
 
             <Route
               path="/remittance-table"
@@ -551,8 +521,7 @@ function App() {
               }
             />
 
-
-             <Route
+            <Route
               path="/philhealth-table"
               element={
                 <ProtectedRoute allowedRoles={['administrator', 'superadmin']}>
@@ -560,10 +529,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-           
-
-
-
 
             <Route
               path="/item-table"
@@ -574,9 +539,6 @@ function App() {
               }
             />
 
-
-
-
             <Route
               path="/salary-grade"
               element={
@@ -585,7 +547,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
 
             <Route
               path="/department-table"
@@ -596,9 +557,6 @@ function App() {
               }
             />
 
-
-
-
             <Route
               path="/department-assignment"
               element={
@@ -607,9 +565,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
-
-
 
             <Route
               path="/leave-table"
@@ -629,9 +584,6 @@ function App() {
               }
             />
 
-
-
-
             <Route
               path="/leave-assignment"
               element={
@@ -641,9 +593,6 @@ function App() {
               }
             />
 
-
-
-
             <Route
               path="/holiday"
               element={
@@ -652,9 +601,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
-
-
 
             <Route
               path="/assessment-clearance"
@@ -680,9 +626,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
-
-
 
             <Route
               path="/faculty-clearance"
@@ -797,31 +740,34 @@ function App() {
               }
             />
 
-
-
             <Route
               path="/profile"
               element={
-                <ProtectedRoute allowedRoles={['staff','administrator', 'superadmin']}>
+                <ProtectedRoute
+                  allowedRoles={['staff', 'administrator', 'superadmin']}
+                >
                   <Profile />
                 </ProtectedRoute>
               }
             />
 
-            
             <Route
               path="/announcement"
               element={
-                <ProtectedRoute allowedRoles={['staff','administrator', 'superadmin']}>
+                <ProtectedRoute
+                  allowedRoles={['staff', 'administrator', 'superadmin']}
+                >
                   <AnnouncementForm />
                 </ProtectedRoute>
               }
             />
-           
+
             <Route
               path="/payslip"
               element={
-                <ProtectedRoute allowedRoles={['staff','administrator', 'superadmin']}>
+                <ProtectedRoute
+                  allowedRoles={['staff', 'administrator', 'superadmin']}
+                >
                   <Payslip />
                 </ProtectedRoute>
               }
@@ -830,7 +776,9 @@ function App() {
             <Route
               path="/overall-payslip"
               element={
-                <ProtectedRoute allowedRoles={['staff','administrator', 'superadmin']}>
+                <ProtectedRoute
+                  allowedRoles={['staff', 'administrator', 'superadmin']}
+                >
                   <PayslipOverall />
                 </ProtectedRoute>
               }
@@ -839,17 +787,21 @@ function App() {
             <Route
               path="/distribution-payslip"
               element={
-                <ProtectedRoute allowedRoles={['staff','administrator', 'superadmin']}>
+                <ProtectedRoute
+                  allowedRoles={['staff', 'administrator', 'superadmin']}
+                >
                   <PayslipDistribution />
                 </ProtectedRoute>
               }
             />
 
-             <Route
+            <Route
               path="/loading-overlay"
               element={
-                <ProtectedRoute allowedRoles={['staff','administrator', 'superadmin']}>
-                  <LoadingOverlay/>
+                <ProtectedRoute
+                  allowedRoles={['staff', 'administrator', 'superadmin']}
+                >
+                  <LoadingOverlay />
                 </ProtectedRoute>
               }
             />
@@ -857,17 +809,21 @@ function App() {
             <Route
               path="/successful-overlay"
               element={
-                <ProtectedRoute allowedRoles={['staff','administrator', 'superadmin']}>
-                  <SuccessfulOverlay/>
+                <ProtectedRoute
+                  allowedRoles={['staff', 'administrator', 'superadmin']}
+                >
+                  <SuccessfulOverlay />
                 </ProtectedRoute>
               }
             />
 
-             <Route
+            <Route
               path="admin-home"
               element={
-                <ProtectedRoute allowedRoles={['staff','administrator', 'superadmin']}>
-                  <AdminHome/>
+                <ProtectedRoute
+                  allowedRoles={['staff', 'administrator', 'superadmin']}
+                >
+                  <AdminHome />
                 </ProtectedRoute>
               }
             />
@@ -893,14 +849,13 @@ function App() {
             <Route
               path="/leave-request-user"
               element={
-                <ProtectedRoute allowedRoles={['administrator', 'superadmin', 'staff']}>
+                <ProtectedRoute
+                  allowedRoles={['administrator', 'superadmin', 'staff']}
+                >
                   <LeaveRequestUser />
                 </ProtectedRoute>
               }
             />
-
-
-
 
             <Route
               path="/leave-assignment"
@@ -923,23 +878,29 @@ function App() {
             <Route
               path="/leave-credits"
               element={
-                <ProtectedRoute allowedRoles={['administrator', 'superadmin', 'staff']}>
+                <ProtectedRoute
+                  allowedRoles={['administrator', 'superadmin', 'staff']}
+                >
                   <LeaveCredits />
                 </ProtectedRoute>
               }
             />
-           
 
+            <Route
+              path="/audit-logs"
+              element={
+                <ProtectedRoute allowedRoles={['administrator', 'superadmin']}>
+                  <AuditLogs />
+                </ProtectedRoute>
+              }
+            />
 
             <Route path="/unauthorized" element={<Unauthorized />} />
           </Routes>
         </Box>
 
-
-
-
         {/* Footer */}
-       <Box
+        <Box
           component="footer"
           sx={{
             position: 'fixed',
@@ -965,26 +926,25 @@ function App() {
               top: '50%',
               left: '50%',
               transform: 'translate(-50%, -50%)',
-              opacity: 0.05,        
-              width: '100%',        
-              pointerEvents: 'none', 
+              opacity: 0.05,
+              width: '100%',
+              pointerEvents: 'none',
               userSelect: 'none',
-              zIndex: 0,            
+              zIndex: 0,
             }}
           />
 
           {/* Footer Text */}
           <Typography variant="body2" sx={{ zIndex: 1, position: 'relative' }}>
-            {'© 2025 EARIST Manila - Human Resources Information System. All rights Reserved.'}
+            {
+              '© 2025 EARIST Manila - Human Resources Information System. All rights Reserved.'
+            }
           </Typography>
         </Box>
       </Box>
     </ThemeProvider>
   );
 }
-
-
-
 
 export default function WrappedApp() {
   return (
@@ -993,12 +953,3 @@ export default function WrappedApp() {
     </Router>
   );
 }
-
-
-
-
-
-
-
-
-

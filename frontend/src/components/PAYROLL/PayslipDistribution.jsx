@@ -52,6 +52,24 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
     message: '',
   });
 
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    console.log(
+      'Token from localStorage:',
+      token ? 'Token exists' : 'No token found'
+    );
+    if (token) {
+      console.log('Token length:', token.length);
+      console.log('Token starts with:', token.substring(0, 20) + '...');
+    }
+    return {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    };
+  };
+
 
   // Search & Filters
   const [searchQuery, setSearchQuery] = useState('');
@@ -89,7 +107,8 @@ const PayslipDistribution = forwardRef(({ employee }, ref) => {
         try {
           setLoading(true);
           const res = await axios.get(
-            `${API_BASE_URL}/api/finalized-payroll`
+            `${API_BASE_URL}/api/finalized-payroll`,
+            getAuthHeaders()
           );
           setAllPayroll(res.data);
           setLoading(false);

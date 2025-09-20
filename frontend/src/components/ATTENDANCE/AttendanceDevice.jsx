@@ -35,6 +35,24 @@ const ViewAttendanceRecord = () => {
   const [records, setRecords] = useState([]);
   const [personName, setPersonName] = useState("");
 
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    console.log(
+      'Token from localStorage:',
+      token ? 'Token exists' : 'No token found'
+    );
+    if (token) {
+      console.log('Token length:', token.length);
+      console.log('Token starts with:', token.substring(0, 20) + '...');
+    }
+    return {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    };
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -42,7 +60,7 @@ const ViewAttendanceRecord = () => {
         personID, 
         startDate, 
         endDate
-      });
+      }, getAuthHeaders());
 
       setRecords(response.data);
 
@@ -90,7 +108,7 @@ const ViewAttendanceRecord = () => {
 
       const response = await axios.post(`${API_BASE_URL}/attendance/api/save-attendance`, {
         records: formattedRecords,
-      });
+      }, getAuthHeaders());
 
       const savedMessages = response.data.map((result) =>
         result.status === "exists"

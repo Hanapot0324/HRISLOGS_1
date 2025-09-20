@@ -41,13 +41,31 @@ const PhilHealthTable = () => {
   const [successOpen, setSuccessOpen] = useState(false);
   const [successAction, setSuccessAction] = useState("");
 
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    console.log(
+      'Token from localStorage:',
+      token ? 'Token exists' : 'No token found'
+    );
+    if (token) {
+      console.log('Token length:', token.length);
+      console.log('Token starts with:', token.substring(0, 20) + '...');
+    }
+    return {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    };
+  };
+
   useEffect(() => {
     fetchPhilHealthData();
   }, []);
 
   const fetchPhilHealthData = async () => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/api/philhealth`);
+      const res = await axios.get(`${API_BASE_URL}/api/philhealth`, getAuthHeaders());
       setData(res.data);
     } catch (err) {
       console.error('Error fetching data:', err);
@@ -62,7 +80,7 @@ const PhilHealthTable = () => {
         PhilHealthContribution: parseFloat(newPhilHealth.PhilHealthContribution)
       };
       
-      await axios.post(`${API_BASE_URL}/api/philhealth`, contributionData);
+      await axios.post(`${API_BASE_URL}/api/philhealth`, contributionData, getAuthHeaders());
       setNewPhilHealth({
         employeeNumber: '',
         PhilHealthContribution: '',
@@ -87,7 +105,7 @@ const PhilHealthTable = () => {
         PhilHealthContribution: parseFloat(editPhilHealth.PhilHealthContribution)
       };
       
-      await axios.put(`/api/philhealth/${editPhilHealth.id}`, contributionData);
+      await axios.put(`${API_BASE_URL}/api/philhealth/${editPhilHealth.id}`, contributionData, getAuthHeaders());
       setEditPhilHealth(null);
       setOriginalPhilHealth(null);
       setIsEditing(false);
@@ -102,7 +120,7 @@ const PhilHealthTable = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${API_BASE_URL}/api/philhealth/${id}`);
+      await axios.delete(`${API_BASE_URL}/api/philhealth/${id}`, getAuthHeaders());
       setEditPhilHealth(null);
       setOriginalPhilHealth(null);
       setIsEditing(false);

@@ -24,6 +24,24 @@ const AttendanceSearch = () => {
   const [endDate, setEndDate] = useState("");
   const [records, setRecords] = useState([]);
 
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    console.log(
+      'Token from localStorage:',
+      token ? 'Token exists' : 'No token found'
+    );
+    if (token) {
+      console.log('Token length:', token.length);
+      console.log('Token starts with:', token.substring(0, 20) + '...');
+    }
+    return {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    };
+  };
+
   const fetchRecords = async () => {
     try {
       const response = await axios.post(
@@ -32,7 +50,8 @@ const AttendanceSearch = () => {
           personID,
           startDate,
           endDate,
-        }
+        },
+        getAuthHeaders()
       );
       setRecords(response.data);
     } catch (err) {
@@ -44,7 +63,8 @@ const AttendanceSearch = () => {
     try {
       const response = await axios.put(
         `${API_BASE_URL}/attendance/api/view-attendance`,
-        { records }
+        { records },
+        getAuthHeaders()
       );
       alert(response.data.message);
     } catch (err) {

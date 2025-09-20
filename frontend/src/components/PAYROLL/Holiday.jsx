@@ -30,6 +30,24 @@ const Holiday = () => {
 
   const statusOptions = ["Active", "Inactive"];
 
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    console.log(
+      'Token from localStorage:',
+      token ? 'Token exists' : 'No token found'
+    );
+    if (token) {
+      console.log('Token length:', token.length);
+      console.log('Token starts with:', token.substring(0, 20) + '...');
+    }
+    return {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    };
+  };
+
   const filteredData = data.filter(
     (item) =>
       item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -42,7 +60,7 @@ const Holiday = () => {
 
   const fetchHoliday = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/holiday`);
+      const response = await axios.get(`${API_BASE_URL}/holiday`, getAuthHeaders());
       setData(response.data);
     } catch (err) {
       console.error("Error fetching holiday data", err.message);
@@ -61,7 +79,7 @@ const Holiday = () => {
         return;
       }
 
-      await axios.post(`${API_BASE_URL}/holiday`, newHoliday);
+      await axios.post(`${API_BASE_URL}/holiday`, newHoliday, getAuthHeaders());
       fetchHoliday();
       setNewHoliday({ description: "", date: "", status: "Active" });
     } catch (error) {
@@ -83,7 +101,7 @@ const Holiday = () => {
   const handleSaveEdit = async () => {
     try {
       setError("");
-      await axios.put(`${API_BASE_URL}/holiday/${editingId}`, editForm);
+      await axios.put(`${API_BASE_URL}/holiday/${editingId}`, editForm, getAuthHeaders());
       setOpenEditModal(false);
       setEditingId(null);
       fetchHoliday();
@@ -96,7 +114,7 @@ const Holiday = () => {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this record?")) {
       try {
-        await axios.delete(`${API_BASE_URL}/holiday/${id}`);
+        await axios.delete(`${API_BASE_URL}/holiday/${id}`, getAuthHeaders());
         fetchHoliday();
       } catch (error) {
         console.error("Error deleting holiday record", error);

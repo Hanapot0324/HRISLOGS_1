@@ -15,6 +15,24 @@ const AttendanceModuleFaculty = () => {
   const [attendanceData, setAttendanceData] = useState([]);
     const navigate = useNavigate();
 
+    const getAuthHeaders = () => {
+      const token = localStorage.getItem('token');
+      console.log(
+        'Token from localStorage:',
+        token ? 'Token exists' : 'No token found'
+      );
+      if (token) {
+        console.log('Token length:', token.length);
+        console.log('Token starts with:', token.substring(0, 20) + '...');
+      }
+      return {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      };
+    };
+
 
     useEffect(() => {
         const storedEmployeeNumber = localStorage.getItem('employeeNumber');
@@ -43,6 +61,7 @@ const AttendanceModuleFaculty = () => {
           startDate,
           endDate,
         },
+        ...getAuthHeaders(),
       });
 
       const processedData = response.data.map((row) => {
@@ -383,7 +402,7 @@ const AttendanceModuleFaculty = () => {
     try {
       const dup = await axios.get(
         `${API_BASE_URL}/attendance/api/overall_attendance_record`,
-        { params: { personID: employeeNumber, startDate, endDate } }
+        { params: { personID: employeeNumber, startDate, endDate }, ...getAuthHeaders() }
       );
       if (dup.data?.data?.length) {
         alert(
@@ -430,7 +449,8 @@ const AttendanceModuleFaculty = () => {
     try {
       const response = await axios.post(
         `${API_BASE_URL}/attendance/api/overall_attendance`,
-        record
+        record,
+        getAuthHeaders()
       );
       alert(response.data.message || "Attendance record saved successfully!");
     } catch (error) {

@@ -45,6 +45,24 @@ const SalaryGradeTable = () => {
   });
   const navigate = useNavigate();
 
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    console.log(
+      'Token from localStorage:',
+      token ? 'Token exists' : 'No token found'
+    );
+    if (token) {
+      console.log('Token length:', token.length);
+      console.log('Token starts with:', token.substring(0, 20) + '...');
+    }
+    return {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    };
+  };
+
 
   useEffect(() => {
     fetchSalaryGrades();
@@ -75,7 +93,7 @@ const SalaryGradeTable = () => {
 
 
   const fetchSalaryGrades = async () => {
-    const response = await axios.get(`${API_BASE_URL}/SalaryGradeTable/salary-grade`);
+    const response = await axios.get(`${API_BASE_URL}/SalaryGradeTable/salary-grade`, getAuthHeaders());
     setSalaryGrades(response.data);
     setFilteredGrades(response.data);
   };
@@ -85,7 +103,7 @@ const SalaryGradeTable = () => {
     if (Object.values(newSalaryGrade).some((v) => v === "")) return;
 
 
-    await axios.post(`${API_BASE_URL}/SalaryGradeTable/salary-grade`, newSalaryGrade);
+    await axios.post(`${API_BASE_URL}/SalaryGradeTable/salary-grade`, newSalaryGrade, getAuthHeaders());
     setNewSalaryGrade({
       effectivityDate: "",
       sg_number: "",
@@ -98,14 +116,14 @@ const SalaryGradeTable = () => {
 
   const updateSalaryGrade = async (id) => {
     const updatedRecord = salaryGrades.find((rec) => rec.id === id);
-    await axios.put(`${API_BASE_URL}/SalaryGradeTable/salary-grade/${id}`, updatedRecord);
+    await axios.put(`${API_BASE_URL}/SalaryGradeTable/salary-grade/${id}`, updatedRecord, getAuthHeaders());
     setEditSalaryGradeId(null);
     fetchSalaryGrades();
   };
 
 
   const deleteSalaryGrade = async (id) => {
-    await axios.delete(`${API_BASE_URL}/SalaryGradeTable/salary-grade/${id}`);
+    await axios.delete(`${API_BASE_URL}/SalaryGradeTable/salary-grade/${id}`, getAuthHeaders());
     fetchSalaryGrades();
   };
 

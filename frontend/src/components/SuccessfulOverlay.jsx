@@ -32,6 +32,8 @@ const SuccessfulOverlay = ({ open, action, onClose }) => {
         return 'Successfully Downloaded!';
       case 'gmail':
         return 'Successfully Sent to Gmail!';
+      case 'submit':
+        return 'Successfully Submitted!';
       default:
         return 'Action Successful!';
     }

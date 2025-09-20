@@ -48,13 +48,31 @@ const ItemTable = () => {
   const [successOpen, setSuccessOpen] = useState(false);
   const [successAction, setSuccessAction] = useState("");
 
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    console.log(
+      'Token from localStorage:',
+      token ? 'Token exists' : 'No token found'
+    );
+    if (token) {
+      console.log('Token length:', token.length);
+      console.log('Token starts with:', token.substring(0, 20) + '...');
+    }
+    return {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    };
+  };
+
   useEffect(() => {
     fetchItems();
   }, []);
 
   const fetchItems = async () => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/api/item-table`);
+      const res = await axios.get(`${API_BASE_URL}/api/item-table`, getAuthHeaders());
       setData(res.data);
     } catch (err) {
       console.error('Error fetching data:', err);
@@ -64,7 +82,7 @@ const ItemTable = () => {
   const handleAdd = async () => {
     setLoading(true);
     try {
-      await axios.post(`${API_BASE_URL}/api/item-table`, newItem);
+      await axios.post(`${API_BASE_URL}/api/item-table`, newItem, getAuthHeaders());
       setNewItem({
         item_description: "",
         employeeID: "",
@@ -89,7 +107,7 @@ const ItemTable = () => {
 
   const handleUpdate = async () => {
     try {
-      await axios.put(`${API_BASE_URL}/api/item-table/${editItem.id}`, editItem);
+      await axios.put(`${API_BASE_URL}/api/item-table/${editItem.id}`, editItem, getAuthHeaders());
       setEditItem(null);
       setOriginalItem(null);
       setIsEditing(false);
@@ -104,7 +122,7 @@ const ItemTable = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${API_BASE_URL}/api/item-table/${id}`);
+      await axios.delete(`${API_BASE_URL}/api/item-table/${id}`, getAuthHeaders());
       setEditItem(null);
       setOriginalItem(null);
       setIsEditing(false);

@@ -43,6 +43,24 @@ const DepartmentAssignment = () => {
   const [successOpen, setSuccessOpen] = useState(false);
   const [successAction, setSuccessAction] = useState("");
 
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    console.log(
+      'Token from localStorage:',
+      token ? 'Token exists' : 'No token found'
+    );
+    if (token) {
+      console.log('Token length:', token.length);
+      console.log('Token starts with:', token.substring(0, 20) + '...');
+    }
+    return {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    };
+  };
+
   useEffect(() => {
     fetchAssignments();
     fetchDepartmentCodes();
@@ -50,7 +68,7 @@ const DepartmentAssignment = () => {
 
   const fetchAssignments = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/department-assignment`);
+      const response = await axios.get(`${API_BASE_URL}/api/department-assignment`, getAuthHeaders());
       setData(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error("Error fetching data", error);
@@ -59,7 +77,7 @@ const DepartmentAssignment = () => {
 
   const fetchDepartmentCodes = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/department-table`);
+      const response = await axios.get(`${API_BASE_URL}/api/department-table`, getAuthHeaders());
       setDepartmentCodes(response.data.map(item => item.code));
     } catch (error) {
       console.error("Error fetching department codes", error);
@@ -74,7 +92,7 @@ const DepartmentAssignment = () => {
         Object.entries(newAssignment).filter(([_, value]) => value !== '')
       );
       
-      await axios.post(`${API_BASE_URL}/api/department-assignment`, filteredAssignment);
+      await axios.post(`${API_BASE_URL}/api/department-assignment`, filteredAssignment, getAuthHeaders());
       setNewAssignment({
         code: "",
         name: "",
@@ -95,7 +113,7 @@ const DepartmentAssignment = () => {
 
   const handleUpdate = async () => {
     try {
-      await axios.put(`${API_BASE_URL}/api/department-assignment/${editAssignment.id}`, editAssignment);
+      await axios.put(`${API_BASE_URL}/api/department-assignment/${editAssignment.id}`, editAssignment, getAuthHeaders());
       setEditAssignment(null);
       setOriginalAssignment(null);
       setIsEditing(false);
@@ -110,7 +128,7 @@ const DepartmentAssignment = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${API_BASE_URL}/api/department-assignment/${id}`);
+      await axios.delete(`${API_BASE_URL}/api/department-assignment/${id}`, getAuthHeaders());
       setEditAssignment(null);
       setOriginalAssignment(null);
       setIsEditing(false);

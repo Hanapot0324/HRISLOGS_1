@@ -11,6 +11,16 @@ const DailyTimeRecordFaculty = () => {
   const [endDate, setEndDate] = useState("");
   const [records, setRecords] = useState([]);
   const [employeeName, setEmployeeName] = useState("");
+
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    return {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    };
+  };
   const fetchRecords = async () => {
     try {
       const response = await axios.post(
@@ -19,7 +29,8 @@ const DailyTimeRecordFaculty = () => {
           personID,
           startDate,
           endDate,
-        }
+        },
+        getAuthHeaders()
       );
 
       const data = response.data;

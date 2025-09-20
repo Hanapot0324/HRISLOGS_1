@@ -22,6 +22,24 @@ const DepartmentTable = () => {
   const [editingId, setEditingId] = useState(null);
   const [editData, setEditData] = useState({});
 
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    console.log(
+      'Token from localStorage:',
+      token ? 'Token exists' : 'No token found'
+    );
+    if (token) {
+      console.log('Token length:', token.length);
+      console.log('Token starts with:', token.substring(0, 20) + '...');
+    }
+    return {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    };
+  };
+
 
   useEffect(() => {
     fetchData();
@@ -30,7 +48,7 @@ const DepartmentTable = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/department-table`);
+      const response = await axios.get(`${API_BASE_URL}/api/department-table`, getAuthHeaders());
       setData(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error("Error fetching data", error);
@@ -40,7 +58,7 @@ const DepartmentTable = () => {
 
   const addEntry = async () => {
     try {
-      await axios.post(`${API_BASE_URL}/api/department-table`, newEntry);
+      await axios.post(`${API_BASE_URL}/api/department-table`, newEntry, getAuthHeaders());
       setNewEntry({ code: "", description: "" });
       fetchData();
     } catch (error) {
@@ -66,7 +84,7 @@ const DepartmentTable = () => {
 
   const saveEdit = async (id) => {
     try {
-      await axios.put(`${API_BASE_URL}/api/department-table/${id}`, editData);
+      await axios.put(`${API_BASE_URL}/api/department-table/${id}`, editData, getAuthHeaders());
       setEditingId(null);
       fetchData();
     } catch (error) {
@@ -77,7 +95,7 @@ const DepartmentTable = () => {
 
   const deleteEntry = async (id) => {
     try {
-      await axios.delete(`${API_BASE_URL}/api/department-table/${id}`);
+      await axios.delete(`${API_BASE_URL}/api/department-table/${id}`, getAuthHeaders());
       fetchData();
     } catch (error) {
       console.error("Error deleting entry", error);

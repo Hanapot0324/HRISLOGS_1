@@ -23,12 +23,23 @@ const AllAttendanceRecord = () => {
   const [records, setRecords] = useState([]);
   const [submittedID, setSubmittedID] = useState("");
 
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    return {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    };
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.post(
         `${API_BASE_URL}/attendance/api/attendance`,
-        { personID, startDate, endDate }
+        { personID, startDate, endDate },
+        getAuthHeaders()
       );
       setRecords(response.data);
       setSubmittedID(personID);

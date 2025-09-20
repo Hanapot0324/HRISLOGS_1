@@ -16,6 +16,16 @@ const DailyTimeRecord = () => {
   const [employeeName, setEmployeeName] = useState("");
   const [officialTimes, setOfficialTimes] = useState({});
 
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    return {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    };
+  };
+
 
   useEffect(() => {
     // Retrieve and decode the token from local storage
@@ -37,7 +47,7 @@ const DailyTimeRecord = () => {
         personID,
         startDate,
         endDate,
-      });
+      }, getAuthHeaders());
 
       const data = response.data;
 
